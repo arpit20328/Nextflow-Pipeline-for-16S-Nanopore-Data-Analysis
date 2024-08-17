@@ -1,4 +1,4 @@
-# Nextflow Pipeline-for-16S-Nanopore-Data-Analysis
+# Nextflow Pipeline-for-16S-Nanopore-Data-Analysis built by Mr Arpit Mathur
 
 This is basic nextlfow pipeline for analyzing 16S Nanopore fastq files with help of tools like filtlong, NanoPlot, Emu, Krona Plot. Scipts also calculates ecological indexes from output emu abundance table.
 
@@ -21,4 +21,7 @@ Pre requisites:
    -numpy python library installed
    -R.4+ version installed 
    -gunzip installed
-   
+
+
+   ![image](https://github.com/user-attachments/assets/ac579edb-fbc3-4ec4-b95b-bcaa8358f5e8)
+

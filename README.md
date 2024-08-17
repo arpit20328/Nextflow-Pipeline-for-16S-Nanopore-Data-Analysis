@@ -23,5 +23,6 @@ Pre requisites:
    -gunzip installed
 
 
-   ![image](https://github.com/user-attachments/assets/ac579edb-fbc3-4ec4-b95b-bcaa8358f5e8)
+![image](https://github.com/user-attachments/assets/b6818107-98b7-4358-a609-cea396a1186f)
+
 

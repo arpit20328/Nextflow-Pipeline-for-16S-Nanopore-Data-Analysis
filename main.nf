@@ -89,17 +89,29 @@ process Emu {
     """
 }
 
+// Process to replace "abundance" with "matching_reads" in the emu_abundance.tsv file
+process krona {
+
+    input:
+    file emu_abundance from emu_channel
+
+    output:
+    file 'krona_ready.tsv' into krona_channel
+
+    script:
+    """
+    sed 's/abundance/matching_reads/g' emu_abundance.tsv > krona_ready.tsv
+    """
+}
+
 workflow {
     merged_gunzip()
     filtlong()
     NanoPlot()
     N50()
     Emu()
+    krona()
 }
-
-#Krona plot generation
-
-#(change “abundance” to “matching_reads” in this tsv file)
 
 #edit the input and output paths in the /home/arpit/Krona/arpit_made_krona_script.py
 

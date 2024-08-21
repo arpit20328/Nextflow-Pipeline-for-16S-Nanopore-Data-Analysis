@@ -1,7 +1,12 @@
 #!/usr/bin/env nextflow
 
-// Define the base directory for your data
-params.basecalled_data = '/path/to/barcode04/'
+// Define the base directory as a parameter that the user can provide
+params.basecalled_data = null
+
+// Check if the path is provided by the user
+if (params.basecalled_data == null) {
+    error "Please provide the path to the barcode directory using --basecalled_data."
+}
 
 // Define the process to merge and decompress FASTQ files
 process merged_gunzip {

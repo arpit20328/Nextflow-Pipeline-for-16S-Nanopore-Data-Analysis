@@ -15,7 +15,11 @@ process merged_gunzip {
     file fastq_files from file("${params.basecalled_data}/*.fastq.gz")
 
     output:
-    file 'merged.fastq' into merged_fastq_channel
+    file 'merged.fastq' into merged_fastq_channel_1
+    file 'merged.fastq' into merged_fastq_channel_2
+    file 'merged.fastq' into merged_fastq_channel_3
+
+
 
     script:
     """
@@ -29,10 +33,12 @@ process merged_gunzip {
 process filtlong {
 
     input:
-    file merged_fastq from merged_fastq_channel
+    file merged_fastq from merged_fastq_channel_1
 
     output:
-    file 'post_filtlong_merged.fastq' into filtered_fastq_channel
+    file 'post_filtlong_merged.fastq' into filtered_fastq_channel_1
+    file 'post_filtlong_merged.fastq' into filtered_fastq_channel_2
+    file 'post_filtlong_merged.fastq' into filtered_fastq_channel_3
 
     script:
     """
@@ -44,7 +50,7 @@ process filtlong {
 process NanoPlot {
 
     input:
-    file filtered_fastq from filtered_fastq_channel
+    file filtered_fastq from filtered_fastq_channel_1
 
     output:
     file 'NanoPlot-output' into nanoplot_channel
@@ -59,7 +65,7 @@ process NanoPlot {
 process N50 {
 
     input:
-    file filtered_fastq from filtered_fastq_channel
+    file filtered_fastq from filtered_fastq_channel_2
 
     output:
     file 'N50_result.txt' into n50_channel
@@ -78,7 +84,7 @@ process N50 {
 process Emu {
 
     input:
-    file filtered_fastq from filtered_fastq_channel
+    file filtered_fastq from filtered_fastq_channel_3
 
     output:
     file 'emu_abundance.tsv' into emu_channel

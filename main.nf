@@ -89,19 +89,32 @@ process Emu {
     """
 }
 
-// Process to replace "abundance" with "matching_reads" in the emu_abundance.tsv file
+// Process to replace "abundance" with "matching_reads" and update the Python script
 process krona {
 
     input:
     file emu_abundance from emu_channel
 
     output:
-    file 'krona_ready.tsv' into krona_channel
+    file 'krona_filtered_file.tsv' into krona_channel
 
     script:
     """
+    # Replace "abundance" with "matching_reads" in the emu_abundance.tsv file
     sed 's/abundance/matching_reads/g' emu_abundance.tsv > krona_ready.tsv
-    """
+
+    # Edit the Python script to update input and output file paths
+    sed -i "s|input_file =.*|input_file = 'krona_ready.tsv'|" /home/arpit/Krona/arpit_made_krona_script.py
+    sed -i "s|output_file =.*|output_file = 'krona_filtered_file.tsv'|" /home/arpit/Krona/arpit_made_krona_script.py
+
+    # Run the updated Python script
+    python3 /home/arpit/Krona/arpit_made_krona_script.py
+   
+    /home/arpit/Krona/bin/ktImportText -o /home/arpit/Krona/arpit.html /home/arpit/Krona/krona_filtered_file.tsv
+
+     """
+
+
 }
 
 workflow {
@@ -113,14 +126,8 @@ workflow {
     krona()
 }
 
-#edit the input and output paths in the /home/arpit/Krona/arpit_made_krona_script.py
 
 
-python3 /home/arpit/Krona/arpit_made_krona_script.py
-
-/home/arpit/Krona/bin/ktImportText -o /home/arpit/Krona/arpit.html /home/arpit/Krona/krona_filtered_barcode15.fastq_rel-abundance.tsv
-
-#arpit.html will be the krona plot link
 
 
 

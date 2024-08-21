@@ -121,15 +121,3 @@ python3 /home/arpit/Krona/arpit_made_krona_script.py
 #load R 
 #load the tsv file 
 
-/*
- * Define the workflow
- */
-workflow {
-    filtlong(params.in) \
-      | N50 \
-      | NanoPlot \ 
-      | Emu \
-      | Krona \
-      | Ecological_index \
-
-}

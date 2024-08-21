@@ -1,4 +1,5 @@
 #!/usr/bin/env nextflow
+//nextflow run rifaxmin.nf --basecalled_data /path/to/fastq/
 
 // Define the base directory as a parameter that the user can provide
 params.basecalled_data = null

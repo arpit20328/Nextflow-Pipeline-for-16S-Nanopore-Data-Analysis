@@ -15,7 +15,7 @@ process merged_gunzip {
     file fastq_files from file("${params.basecalled_data}/*.fastq.gz")
 
     output:
-    file 'merged_fastq' into merged_fastq_channel
+    file 'merged.fastq' into merged_fastq_channel
 
     script:
     """
@@ -40,23 +40,61 @@ process filtlong {
     """
 }
 
+// Process to run NanoPlot for visualizing the quality of the FASTQ file
+process NanoPlot {
+
+    input:
+    file filtered_fastq from filtered_fastq_channel
+
+    output:
+    file 'NanoPlot-output' into nanoplot_channel
+
+    script:
+    """
+    NanoPlot --fastq post_filtlong_merged.fastq --plots hex -o NanoPlot-output
+    """
+}
+
+// Process to calculate N50 from the filtered FASTQ file
+process N50 {
+
+    input:
+    file filtered_fastq from filtered_fastq_channel
+
+    output:
+    file 'N50_result.txt' into n50_channel
+
+    script:
+    """
+    awk '{if(NR%4==2) print length(\$0)}' post_filtlong_merged.fastq | \
+    sort -nr | \
+    awk 'BEGIN {total=0; half=0; sum=0} \
+    {lengths[NR]=\$1; total+=\$1} \
+    END {half=total/2; for (i=1; i<=NR; i++) {sum+=lengths[i]; if (sum >= half) {print "N50:", lengths[i]; exit}}}' > N50_result.txt
+    """
+}
+
+// Process to run Emu for abundance estimation
+process Emu {
+
+    input:
+    file filtered_fastq from filtered_fastq_channel
+
+    output:
+    file 'emu_abundance.tsv' into emu_channel
+
+    script:
+    """
+    emu abundance post_filtlong_merged.fastq --type map-ont --db /home/arpit/ --min_abundance 0.0001 --threads 128 > emu_abundance.tsv
+    """
+}
+
 workflow {
     merged_gunzip()
     filtlong()
-}
-
-
-process NanoPlot {
-NanoPlot --fastq post_filtlong_merged.fastq  --plots hex  
-}
-
-
-process N50 {
-awk '{if(NR%4==2) print length($0)}' post_filtlong_merged.fastq | sort -nr | awk 'BEGIN {total=0; half=0; sum=0} {lengths[NR]=$1; total+=$1} END {half=total/2; for (i=1; i<=NR; i++) {sum+=lengths[i]; if (sum >= half) {print "N50:", lengths[i]; exit}}}'
-}
-
-process Emu {
-emu abundance post_filtlong_merged.fastq --type map-ont --db /home/arpit/   --min_abundance 0.0001 --threads 128  
+    NanoPlot()
+    N50()
+    Emu()
 }
 
 #Krona plot generation

@@ -1,5 +1,4 @@
 #!/usr/bin/env nextflow
-//nextflow run rifaxmin.nf --basecalled_data /path/to/fastq/
 
 // Define the base directory as a parameter that the user can provide
 params.basecalled_data = null
@@ -9,7 +8,7 @@ if (params.basecalled_data == null) {
     error "Please provide the path to the barcode directory using --basecalled_data."
 }
 
-// Define the process to merge and decompress FASTQ files
+// Process to merge and decompress FASTQ files
 process merged_gunzip {
 
     input:
@@ -22,18 +21,30 @@ process merged_gunzip {
     """
     cat $fastq_files > merged_fastq.gz
     gunzip merged_fastq.gz
+    mv merged_fastq merged.fastq
+    """
+}
+
+// Process to run filtlong on the merged FASTQ file
+process filtlong {
+
+    input:
+    file merged_fastq from merged_fastq_channel
+
+    output:
+    file 'post_filtlong_merged.fastq' into filtered_fastq_channel
+
+    script:
+    """
+    filtlong merged.fastq --min_length 1000 --max_length 2000 --min_mean_q 8 > post_filtlong_merged.fastq
     """
 }
 
 workflow {
     merged_gunzip()
+    filtlong()
 }
 
-
-
-process filtlong {
-filtlong merged.fastq --min_length 1000 --max_length 2000 --min_mean_q 8 > post_filtlong_merged.fastq
-}
 
 process NanoPlot {
 NanoPlot --fastq post_filtlong_merged.fastq  --plots hex  

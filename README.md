@@ -22,6 +22,6 @@ Pre requisites:
    -R.4+ version installed 
    -gunzip installed
 
-![image](https://github.com/user-attachments/assets/b7cb5287-6854-46ff-92d1-2f9810d09c23)
+![image](https://github.com/user-attachments/assets/81bfd856-8027-425f-a1f6-1cce3c1287b2)
 
 

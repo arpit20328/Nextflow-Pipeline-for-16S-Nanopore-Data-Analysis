@@ -9,7 +9,7 @@ Pre requisites:
 
     default: Default Database files available at https://osf.io/56uf7/ "see the files under the header emu-default-db-input" 
 
-2.  Filtlong: Filtlong is a tool for filtering long reads by quality. It can take a set of long reads and produce a smaller, better subset. It uses both read length (longer 
+2.  NanoFilt: NanoFilt is a tool for filtering long reads by quality. It can take a set of long reads and produce a smaller, better subset. It uses both read length (longer 
     is better) and read identity (higher is better) when choosing which reads pass the filter.
     https://github.com/rrwick/Filtlong
 
@@ -22,7 +22,6 @@ Pre requisites:
    -R.4+ version installed 
    -gunzip installed
 
-
-![image](https://github.com/user-attachments/assets/b6818107-98b7-4358-a609-cea396a1186f)
+![image](https://github.com/user-attachments/assets/b7cb5287-6854-46ff-92d1-2f9810d09c23)
 
 

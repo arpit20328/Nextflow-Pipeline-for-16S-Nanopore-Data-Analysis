@@ -22,6 +22,18 @@ Pre requisites:
    -R.4+ version installed 
    -gunzip installed
 
+#Usage 
+Make sure you have this type of structure before running nextflow
+
+ project/
+├── main.nf
+├── nextflow.config
+├── input.fastq
+├── Index_calculation.sh
+└── arpit_made_krona_script.py
+
+ nextflow run main.nf -dsl2
+
 ![image](https://github.com/user-attachments/assets/81bfd856-8027-425f-a1f6-1cce3c1287b2)
 
 

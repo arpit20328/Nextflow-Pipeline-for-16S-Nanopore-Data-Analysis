@@ -22,7 +22,7 @@ Pre requisites:
    -R.4+ version installed 
    -gunzip installed
 
-#Usage 
+# Usage 
 Make sure you have this type of structure before running nextflow
 
  project/

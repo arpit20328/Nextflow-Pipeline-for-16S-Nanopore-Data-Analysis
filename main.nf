@@ -1,205 +1,74 @@
 #!/usr/bin/env nextflow
+nextflow.enable.dsl=2
 
+log.info """
+STARTING PIPELINE
+=*=*=*=*=*=*=*=*=
+Sample list: ${params.input}
+Sequences in:${params.sequences}
+"""
 
-params.input = "input.fastq"
-
-params.db = "/home/arpit"
-
-params.index_script = "Index_calculation.sh"
-
-params.krona_script = "arpit_made_krona_script.py"
-
-
-workflow {
-
-
-    Channel.fromPath(params.input)
-
-        .set { input_fastq }
-
-
-    process_subsample(input_fastq)
-
-        .set { subsampled_fastq }
-
-
-    process_nanofilt(subsampled_fastq)
-
-        .set { filtered_fastq }
-
-
-    process_nanoplot(filtered_fastq)
-
-
-    process_emu(filtered_fastq)
-
-        .set { emu_tsv }
-
-
-    process_index_calc(emu_tsv)
-
-
-    process_krona(emu_tsv)
-
+process Subsample { 
+	input:
+		val (Sample)
+	output:
+		tuple val (Sample), file("*_subsampled.fastq")
+	script:
+	"""	
+	seqkit sample -n 120000 -j 140  ${params.sequences}/${Sample}.fastq > ${Sample}_subsampled.fastq
+	"""
 }
 
-
-// Subsample with seqkit
-
-process process_subsample {
-
-
-    input:
-
-    path input_file
-
-
-    output:
-
-    path "subsampled_output.fastq"
-
-
-    script:
-
-    """
-
-    seqkit sample -n 120000 -j 140 ${input_file} > subsampled_output.fastq
-
-    """
-
+process NanoFilt { 
+	input:
+		tuple val (Sample), file(subsampled_fastq) 
+	output:
+		tuple val (Sample), file("*_filtered.fastq")
+	script:
+	"""	
+	NanoFilt -q 5 -l 1000 --maxlength 2000  ${subsampled_fastq} > ${Sample}_filtered.fastq
+	"""
 }
 
-
-// Quality filter with NanoFilt
-
-process process_nanofilt {
-
-
-    input:
-
-    path subsampled
-
-
-    output:
-
-    path "output.fastq"
-
-
-    script:
-
-    """
-
-    NanoFilt -q 5 -l 500 --maxlength 2000 ${subsampled} > output.fastq
-
-    """
-
+process NanoPlot {
+	publishDir "$PWD/Final_Output/${Sample}/", mode: 'copy', pattern: '*_NanoPlot_Report'
+	input:
+		tuple val (Sample), file(filtered_fastq) 
+	output:
+		tuple val (Sample), file("*_NanoPlot_Report")
+	script:
+	"""	
+	NanoPlot -t 128 --fastq ${filtered_fastq} --N50 -o ${Sample}_NanoPlot_Report
+	"""
 }
 
-
-// NanoPlot visualization
-
-process process_nanoplot {
-
-
-    input:
-
-    path fastq_file
-
-
-    output:
-
-    path "NanoPlot_Report"
-
-
-    script:
-
-    """
-
-    NanoPlot -t 120 --fastq ${fastq_file} --plots hex dot --N50 -o NanoPlot_Report
-
-    """
-
+process EMU { 
+	publishDir "$PWD/Final_Output/${Sample}/", mode: 'copy', pattern: '*_emu_results'
+	input:
+		tuple val (Sample), file(filtered_fastq) 
+	output:
+		tuple val (Sample), path("*_emu_results")
+	script:
+	"""	
+	emu abundance --type map-ont ${filtered_fastq} --db /home/arpit --threads 128 --min-abundance 0.0001  --output-dir ${Sample}_emu_results
+	"""
 }
 
-
-// Emu abundance estimation
-
-process process_emu {
-
-
-    input:
-
-    path filtered
-
-
-    output:
-
-    path "emu_results/*.tsv"
-
-
-    script:
-
-    """
-
-    emu abundance --type map-ont ${filtered} --db ${params.db} --threads 140 --min-abundance 0.0001 --output-dir emu_results
-
-    """
-
+workflow NANOPORE_16S {
+	Channel
+		.fromPath(params.input)
+		.splitCsv(header:false)
+		.flatten()
+		.map{ it }
+		.set { samples_ch }
+	
+	main:
+	Subsample(samples_ch)
+	NanoFilt(Subsample.out)
+	NanoPlot(NanoFilt.out)
+	EMU(NanoFilt.out)
 }
 
-
-// Ecological index calculation
-
-process process_index_calc {
-
-
-    input:
-
-    path tsv_files
-
-
-    output:
-
-    path "emu_results/Ecological_index_results.txt"
-
-
-    script:
-
-    """
-
-    cd emu_results
-
-    bash ../${params.index_script} *.tsv > Ecological_index_results.txt
-
-    """
-
+workflow.onComplete {
+	log.info ( workflow.success ? "\n\nDone! Output in the 'Final_Output' directory \n" : "Oops .. something went wrong" )
 }
-
-
-// Krona chart generation
-
-process process_krona {
-
-
-    input:
-
-    path tsv_files
-
-
-    output:
-
-    path "krona_filtered_file.tsv"
-
-
-    script:
-
-    """
-
-    cd emu_results
-
-    python3 ../${params.krona_script} *.tsv
-
-    """
-
-}
-

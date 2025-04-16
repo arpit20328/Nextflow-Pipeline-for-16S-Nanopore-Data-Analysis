@@ -51,6 +51,33 @@ process EMU {
 	script:
 	"""	
 	emu abundance --type map-ont ${filtered_fastq} --db /home/arpit --threads 128 --min-abundance 0.0001  --output-dir ${Sample}_emu_results
+	sed -i 's/abundance/matching_reads/g' ${Sample}_emu_results/*tsv
+	"""
+}
+
+process INDEX_CALCULATION {
+	publishDir "$PWD/Final_Output/${Sample}/", mode: 'copy', pattern: '*_index.tsv'
+	input:
+		tuple val (Sample), path(emu_results)
+	output:
+		tuple val (Sample), file("*_index.tsv")
+	script:
+	"""
+	${params.index_calc} ${emu_results}/*tsv ${Sample}_temp.tsv > ${Sample}_index.tsv
+	"""
+}
+
+process KRONA {
+	publishDir "$PWD/Final_Output/${Sample}/", mode: 'copy', pattern: '*_krona.html'
+	input:
+		tuple val (Sample), path(emu_results)
+	output:
+		tuple val (Sample), file("*_krona.html")
+	script:
+	"""
+	${params.generate_krona_tsv} ${emu_results}/*tsv ${Sample}_krona.tsv
+	${params.generate_krona_plot} ${Sample}_krona.tsv 
+	mv text.krona.html ${Sample}_krona.html
 	"""
 }
 
@@ -67,6 +94,8 @@ workflow NANOPORE_16S {
 	NanoFilt(Subsample.out)
 	NanoPlot(NanoFilt.out)
 	EMU(NanoFilt.out)
+	INDEX_CALCULATION(EMU.out)
+	KRONA(EMU.out)
 }
 
 workflow.onComplete {

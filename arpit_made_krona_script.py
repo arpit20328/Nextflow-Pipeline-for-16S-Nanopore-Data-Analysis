@@ -1,4 +1,5 @@
 import pandas as pd
+import sys
 
 def prep_krona(input_file, output_file):
     # Read the TSV file
@@ -22,9 +23,7 @@ def prep_krona(input_file, output_file):
     # Save the updated TSV file
     df.to_csv(output_file, sep='\t', index=False, header=False)
 
-# Update with your actual file paths
-input_file = '/home/arpit/Krona/filtlong_post_processed_barcode15_fastq_rel-abundance.tsv'
-output_file = '/home/arpit/Krona/krona_filtered_barcode15.fastq_rel-abundance_13_august.tsv'
-
-prep_krona(input_file, output_file)
-
+if __name__ == "__main__":
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
+    prep_krona(input_file, output_file)

@@ -29,6 +29,6 @@ Make sure you have this type of structure before running nextflow
 
 # nextflow run main.nf -dsl2
 
-![image](https://github.com/user-attachments/assets/81bfd856-8027-425f-a1f6-1cce3c1287b2)
+![image](https://github.com/user-attachments/assets/52e61690-08b2-4b65-9fe6-400ba9623138)
 
 

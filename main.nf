@@ -26,7 +26,7 @@ process NanoFilt {
 		tuple val (Sample), file("*_filtered.fastq")
 	script:
 	"""	
-	NanoFilt -q 5 -l 1000 --maxlength 2000  ${subsampled_fastq} > ${Sample}_filtered.fastq
+	NanoFilt -q 6 -l 1000 --maxlength 2000  ${subsampled_fastq} > ${Sample}_filtered.fastq
 	"""
 }
 

@@ -6,6 +6,10 @@ This is basic nextlfow pipeline for analyzing 16S Nanopore fastq files with help
 
 ![image](https://github.com/user-attachments/assets/1133a9d0-53f4-40bf-89db-70b2b171686e)
 
+# Patient Report
+
+![image](https://github.com/user-attachments/assets/f1d41190-b4e2-4ec8-808b-65410b51ebd5)
+
 # Pre requisites:  
 
 1.  Emu: species-level taxonomic abundance for full-length 16S reads

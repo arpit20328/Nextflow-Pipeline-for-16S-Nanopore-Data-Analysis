@@ -9,27 +9,59 @@ Sequences in:${params.sequences}
 """
 
 process Subsample { 
-	input:
-		val (Sample)
-	output:
-		tuple val (Sample), file("*_subsampled.fastq")
-	script:
-	"""	
-	#Altough we are taking 125K reads contradictory to 120K as mentioned in SOP but extra 5K are present since reads get removed due to chimerisim detection
-        seqkit sample -n 125000 -j 140  ${params.sequences}/${Sample}.fastq > ${Sample}_subsampled.fastq
-	"""
+    input:
+        val (Sample)
+    output:
+        tuple val (Sample), file("*_subsampled.fastq")
+
+    script:
+    """	
+    seqkit sample -n 125000 -j 150 ${params.sequences}/${Sample}.fastq > ${Sample}_subsampled.fastq
+    """
 }
 
-process NanoFilt { 
-	input:
-		tuple val (Sample), file(subsampled_fastq) 
-	output:
-		tuple val (Sample), file("*_filtered.fastq")
-	script:
-	"""	
-	NanoFilt -q 6 -l 1000 --maxlength 2000  ${subsampled_fastq} > ${Sample}_filtered.fastq
-	"""
+
+process Chimera_removal {
+    publishDir "$PWD/Final_Output/${Sample}/", mode: 'copy', pattern: "${Sample}_chimera_result.txt"
+
+    input:
+        tuple val(Sample), file(subsampled_fastq)
+
+    output:
+        tuple val(Sample), file("nonchimeras.fastq")
+
+    script:
+    """
+    vsearch --uchime_denovo ${subsampled_fastq} \
+            --threads 150 \
+            --chimeras chimeras.txt \
+            --nonchimeras nonchimeras.txt \
+            > ${Sample}_chimera_result.txt
+     
+    grep '^>' nonchimeras.txt | sed 's/>//' > nonchimeras_ids.txt
+    seqtk subseq ${subsampled_fastq} nonchimeras_ids.txt > nonchimeras.fastq
+
+   """
 }
+
+
+
+process NanoFilt { 
+    input:
+        tuple val(Sample), file(nonchimeras_fastq) 
+
+    output:
+        tuple val(Sample), file("*_filtered.fastq")
+
+    script:
+    """	
+    NanoFilt -q 6 -l 1000 --maxlength 2000 ${nonchimeras_fastq} > ${Sample}_filtered.fastq
+    """
+}
+
+
+
+
 
 process NanoPlot {
 	publishDir "$PWD/Final_Output/${Sample}/", mode: 'copy', pattern: '*_NanoPlot_Report'
@@ -39,7 +71,7 @@ process NanoPlot {
 		tuple val (Sample), file("*_NanoPlot_Report")
 	script:
 	"""	
-	NanoPlot -t 128 --fastq ${filtered_fastq} --N50 -o ${Sample}_NanoPlot_Report
+	NanoPlot -t 150 --fastq ${filtered_fastq} --N50 -o ${Sample}_NanoPlot_Report
 	"""
 }
 
@@ -51,7 +83,7 @@ process EMU {
 		tuple val (Sample), path("*_emu_results")
 	script:
 	"""	
-	emu abundance --type map-ont ${filtered_fastq} --db /home/arpit --threads 128 --min-abundance 0.0001  --output-dir ${Sample}_emu_results
+	emu abundance --type map-ont ${filtered_fastq} --db /home/arpit --threads 150 --min-abundance 0.0001  --output-dir ${Sample}_emu_results
 	sed -i 's/abundance/matching_reads/g' ${Sample}_emu_results/*tsv
 	"""
 }
@@ -105,21 +137,24 @@ process KRONA {
 }
 
 workflow NANOPORE_16S {
-	Channel
-		.fromPath(params.input)
-		.splitCsv(header:false)
-		.flatten()
-		.map{ it }
-		.set { samples_ch }
-	
-	main:
-	Subsample(samples_ch)
-	NanoFilt(Subsample.out)
-	NanoPlot(NanoFilt.out)
-	EMU(NanoFilt.out)
-	INDEX_CALCULATION(EMU.out)
-	KRONA(EMU.out)
+    Channel
+        .fromPath(params.input)
+        .splitCsv(header:false)
+        .flatten()
+        .map{ it }
+        .set { samples_ch }
+
+    main:
+    Subsample(samples_ch)
+    Chimera_removal(Subsample.out)
+    NanoFilt(Chimera_removal.out)
+    NanoPlot(NanoFilt.out)
+    EMU(NanoFilt.out)
+    INDEX_CALCULATION(EMU.out)
+    KRONA(EMU.out)
 }
+
+
 
 workflow.onComplete {
 	log.info ( workflow.success ? "\n\nDone! Output in the 'Final_Output' directory \n" : "Oops .. something went wrong" )

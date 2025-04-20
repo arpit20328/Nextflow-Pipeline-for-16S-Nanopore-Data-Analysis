@@ -2,6 +2,10 @@
 
 This is basic nextlfow pipeline for analyzing 16S Nanopore fastq files with help of tools like filtlong, NanoPlot, Emu, Krona Plot. Scipts also calculates ecological indexes from output emu abundance table.
 
+# Pipeline Structure is as follows
+
+![image](https://github.com/user-attachments/assets/52e61690-08b2-4b65-9fe6-400ba9623138)
+
 # Pre requisites:  
 
 1.  Emu: species-level taxonomic abundance for full-length 16S reads
@@ -22,13 +26,20 @@ This is basic nextlfow pipeline for analyzing 16S Nanopore fastq files with help
    -R.4+ version installed 
    -gunzip installed
 
-# Usage 
+# Structure  
 Make sure you have this type of structure before running nextflow
 
- ![image](https://github.com/user-attachments/assets/8ac2a993-f6b2-4f67-8b35-73598cb0e879)
+project/
+├── main.nf
+├── nextflow.config
+├── samplesheet.csv
+├── scripts/
+├── run_nextflow.sh
+└── sequences/
 
-# nextflow run main.nf -dsl2
+# Usage
 
-![image](https://github.com/user-attachments/assets/52e61690-08b2-4b65-9fe6-400ba9623138)
+bash nextflow.sh > scripts. log 
+
 
 

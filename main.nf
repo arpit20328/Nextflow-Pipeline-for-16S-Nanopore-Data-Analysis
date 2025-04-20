@@ -15,7 +15,8 @@ process Subsample {
 		tuple val (Sample), file("*_subsampled.fastq")
 	script:
 	"""	
-	seqkit sample -n 120000 -j 140  ${params.sequences}/${Sample}.fastq > ${Sample}_subsampled.fastq
+	#Altough we are taking 125K reads contradictory to 120K as mentioned in SOP but extra 5K are present since reads get removed due to chimerisim detection
+        seqkit sample -n 125000 -j 140  ${params.sequences}/${Sample}.fastq > ${Sample}_subsampled.fastq
 	"""
 }
 

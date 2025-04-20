@@ -47,4 +47,7 @@ bash nextflow.sh > scripts. log
   note         = {Accessed: 2025-04-20},
 }
 
+# License
+
+This pipeline is based on many open-source tools. Please check the specific licenses of each individual tool.
 

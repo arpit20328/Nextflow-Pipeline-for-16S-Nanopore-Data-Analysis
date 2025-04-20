@@ -36,5 +36,15 @@ Make sure you have this type of structure before running nextflow
 
 bash nextflow.sh > scripts. log 
 
+# Citation
+
+@software{mathur_2025_nextflow,
+  author       = {Arpit Mathur},
+  title        = {Nextflow-Pipeline-for-16S-Nanopore-Data-Analysis},
+  year         = {2025},
+  version      = {1.0.0},
+  url          = {https://github.com/arpit20328/Nextflow-Pipeline-for-16S-Nanopore-Data-Analysis},
+  note         = {Accessed: 2025-04-20},
+}
 
 

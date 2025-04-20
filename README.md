@@ -29,13 +29,8 @@ This is basic nextlfow pipeline for analyzing 16S Nanopore fastq files with help
 # Structure  
 Make sure you have this type of structure before running nextflow
 
-project/
-├── main.nf
-├── nextflow.config
-├── samplesheet.csv
-├── scripts/
-├── run_nextflow.sh
-└── sequences/
+![image](https://github.com/user-attachments/assets/d2ed1ff4-c3d2-4ccf-94b8-7b1d6b7e90ed)
+
 
 # Usage
 

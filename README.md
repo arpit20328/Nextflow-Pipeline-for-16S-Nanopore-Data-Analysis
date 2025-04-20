@@ -26,7 +26,7 @@ This is basic nextlfow pipeline for analyzing 16S Nanopore fastq files with help
    -R.4+ version installed 
    -gunzip installed
 
-# Wroking Directory Structure  
+# Working Directory Structure  
 Make sure you have this type of structure before running nextflow
 
 ![image](https://github.com/user-attachments/assets/d2ed1ff4-c3d2-4ccf-94b8-7b1d6b7e90ed)

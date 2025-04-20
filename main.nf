@@ -32,7 +32,7 @@ process Chimera_removal {
 
     script:
     """
-    vsearch --uchime_denovo ${subsampled_fastq} \
+    nohup vsearch --uchime_denovo ${subsampled_fastq} \
             --threads 150 \
             --chimeras chimeras.txt \
             --nonchimeras nonchimeras.txt \

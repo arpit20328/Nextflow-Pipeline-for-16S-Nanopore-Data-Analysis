@@ -58,14 +58,25 @@ process EMU {
 process INDEX_CALCULATION {
 	publishDir "$PWD/Final_Output/${Sample}/", mode: 'copy', pattern: '*_index.tsv'
 	input:
-		tuple val (Sample), path(emu_results)
+		tuple val(Sample), path(emu_results)
 	output:
-		tuple val (Sample), file("*_index.tsv")
+		tuple val(Sample), file("*_index.tsv")
 	script:
 	"""
-	${params.index_calc} ${emu_results}/*tsv ${Sample}_temp.tsv > ${Sample}_index.tsv
+	# Find the appropriate file(s)
+	FILE1=${emu_results}/${Sample}_filtered_rel-abundance.tsv
+	FILE2=${emu_results}/${Sample}_filtered_rel-abundance-threshold-0.0001.tsv
+
+	if [[ -f "\$FILE2" ]]; then
+		echo "Using threshold file: \$FILE2"
+		${params.index_calc} "\$FILE2" ${Sample}_temp.tsv > ${Sample}_index.tsv
+	else
+		echo "Using basic file: \$FILE1"
+		${params.index_calc} "\$FILE1" ${Sample}_temp.tsv > ${Sample}_index.tsv
+	fi
 	"""
 }
+
 
 process KRONA {
 	publishDir "$PWD/Final_Output/${Sample}/", mode: 'copy', pattern: '*_krona.html'
@@ -75,7 +86,18 @@ process KRONA {
 		tuple val (Sample), file("*_krona.html")
 	script:
 	"""
-	${params.generate_krona_tsv} ${emu_results}/*tsv ${Sample}_krona.tsv
+	# Find the appropriate file(s)
+	FILE1=${emu_results}/${Sample}_filtered_rel-abundance.tsv
+	FILE2=${emu_results}/${Sample}_filtered_rel-abundance-threshold-0.0001.tsv
+
+	if [[ -f "\$FILE2" ]]; then
+		echo "Using threshold file: \$FILE2"
+		python3 ${params.generate_krona_tsv} "\$FILE2" ${Sample}_krona.tsv
+	else
+		echo "Using basic file: \$FILE1"
+		python3 ${params.generate_krona_tsv} "\$FILE1" ${Sample}_krona.tsv
+	fi
+
 	${params.generate_krona_plot} ${Sample}_krona.tsv 
 	mv text.krona.html ${Sample}_krona.html
 	"""

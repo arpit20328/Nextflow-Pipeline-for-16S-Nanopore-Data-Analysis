@@ -36,7 +36,7 @@ Make sure you have this type of structure before running nextflow
 
 bash nextflow.sh > scripts. log 
 
-# Citation
+# Citation (BibTeX)
 
 @software{mathur_2025_nextflow,
   author       = {Arpit Mathur},

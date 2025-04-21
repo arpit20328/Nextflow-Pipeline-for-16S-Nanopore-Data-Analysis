@@ -22,45 +22,34 @@ process Subsample {
 
 
 process Chimera_removal {
-    publishDir "$PWD/Final_Output/${Sample}/", mode: 'copy', pattern: "${Sample}_chimera_result.txt"
+    publishDir "$PWD/Final_Output/${Sample}/", mode: 'copy'
 
     input:
         tuple val(Sample), file(subsampled_fastq)
 
     output:
-        tuple val(Sample), file("nonchimeras.fastq")
+        tuple val(Sample), file("nonchimeras.fastq"), file("${Sample}_chimera_result.txt")
 
     script:
     """
-    nohup vsearch --uchime_denovo ${subsampled_fastq} \
-            --threads 150 \
-            --chimeras chimeras.txt \
-            --nonchimeras nonchimeras.txt \
-            > ${Sample}_chimera_result.txt
-     
+    nohup vsearch --uchime_denovo ${subsampled_fastq} --chimeras chimeras.txt --nonchimeras nonchimeras.txt > ${Sample}_chimera_result.txt 2>&1 
     grep '^>' nonchimeras.txt | sed 's/>//' > nonchimeras_ids.txt
     seqtk subseq ${subsampled_fastq} nonchimeras_ids.txt > nonchimeras.fastq
-
-   """
+    """
 }
-
-
 
 process NanoFilt { 
     input:
-        tuple val(Sample), file(nonchimeras_fastq) 
+        tuple val(Sample), file(nonchimeras_fastq), file(chimera_result) 
 
     output:
         tuple val(Sample), file("*_filtered.fastq")
 
     script:
-    """	
+    """    
     NanoFilt -q 6 -l 1000 --maxlength 2000 ${nonchimeras_fastq} > ${Sample}_filtered.fastq
     """
 }
-
-
-
 
 
 process NanoPlot {

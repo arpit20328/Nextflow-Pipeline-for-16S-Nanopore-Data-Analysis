@@ -57,7 +57,7 @@ process NanoPlot {
 	input:
 		tuple val (Sample), file(filtered_fastq) 
 	output:
-		tuple val (Sample), file("*_NanoPlot_Report")
+		tuple val (Sample), path("*_NanoPlot_Report")
 	script:
 	"""	
 	NanoPlot -t 150 --fastq ${filtered_fastq} --N50 -o ${Sample}_NanoPlot_Report
@@ -125,6 +125,57 @@ process KRONA {
 	"""
 }
 
+process BARPLOT_TABLE_EMU {
+	publishDir "$PWD/Final_Output/${Sample}/", mode: 'copy', pattern: '*.pdf'
+	publishDir "$PWD/Final_Output/${Sample}/", mode: 'copy', pattern: '*.tsv'
+	input:
+		tuple val (Sample), path(emu_results)
+	output:
+		tuple val (Sample), file("top_microbial_species_barplot.pdf"), file("Published_EMU_table.tsv")
+	script:
+	"""
+	# Find the appropriate file(s)
+	FILE1=${emu_results}/${Sample}_filtered_rel-abundance.tsv
+	FILE2=${emu_results}/${Sample}_filtered_rel-abundance-threshold-0.0001.tsv
+
+	if [[ -f "\$FILE2" ]]; then
+		echo "Using threshold file: \$FILE2"
+		Rscript ${params.barplot_table_emu} "\$FILE2"
+	else
+		echo "Using basic file: \$FILE1"
+		Rscript ${params.barplot_table_emu} "\$FILE1"
+	fi
+	"""		
+}
+
+
+process Patient_report {
+
+	//errorStrategy 'ignore'
+    publishDir "$PWD/Final_Output/${Sample}/", mode: 'copy', pattern: "${Sample}_patient_report.pdf"
+
+    input:
+        tuple val(Sample), file(index_tsv), file(barplot_pdf), file(barplot_tsv), path(nanoplot_dir)
+
+    output:
+        tuple val(Sample), file("${Sample}_patient_report.pdf")
+
+    script:
+    """
+    # Convert TSVs to PDFs
+    bash /home/arpit/nextflow_16s/new_pipeline/scripts/tsv_pdf.sh ${index_tsv} ${Sample}_index.pdf
+    bash /home/arpit/nextflow_16s/new_pipeline/scripts/tsv_pdf.sh ${barplot_tsv} ${Sample}_emu_table.pdf
+
+    # Convert HTML to PDF
+    bash /home/arpit/nextflow_16s/new_pipeline/scripts/html_to_pdf.sh ${nanoplot_dir}/NanoPlot-report.html ${Sample}_nanoplot.pdf || true
+
+	bash /home/arpit/nextflow_16s/new_pipeline/scripts/png_to_pdf.sh ${nanoplot_dir}
+    # Merge all PDFs
+    pdfunite ${Sample}_index.pdf $PWD/scripts/Wet_lab_Format.pdf  ${Sample}_nanoplot.pdf ${nanoplot_dir}/*.pdf ${Sample}_emu_table.pdf ${barplot_pdf} ${Sample}_patient_report.pdf
+    """
+}
+
+
 workflow NANOPORE_16S {
     Channel
         .fromPath(params.input)
@@ -139,10 +190,13 @@ workflow NANOPORE_16S {
     NanoFilt(Chimera_removal.out)
     NanoPlot(NanoFilt.out)
     EMU(NanoFilt.out)
+	BARPLOT_TABLE_EMU(EMU.out)
     INDEX_CALCULATION(EMU.out)
-    KRONA(EMU.out)
+    KRONA(EMU.out)	
+	Patient_report(INDEX_CALCULATION.out.join(BARPLOT_TABLE_EMU.out.join(NanoPlot.out)))
 }
 
+	
 
 
 workflow.onComplete {

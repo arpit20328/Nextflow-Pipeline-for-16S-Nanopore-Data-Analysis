@@ -131,7 +131,7 @@ process BARPLOT_TABLE_EMU {
 	input:
 		tuple val (Sample), path(emu_results)
 	output:
-		tuple val (Sample), file("top_microbial_species_barplot.pdf"), file("Published_EMU_table.tsv")
+		tuple val (Sample), file("Top 25 Microbial Species Barplot.pdf"), file("Published_EMU_table.tsv")
 	script:
 	"""
 	# Find the appropriate file(s)
@@ -171,7 +171,33 @@ process Patient_report {
 
 	bash /home/arpit/nextflow_16s/new_pipeline/scripts/png_to_pdf.sh ${nanoplot_dir}
     # Merge all PDFs
-    pdfunite ${Sample}_index.pdf $PWD/scripts/Wet_lab_Format.pdf  ${Sample}_nanoplot.pdf ${nanoplot_dir}/*.pdf ${Sample}_emu_table.pdf ${barplot_pdf} ${Sample}_patient_report.pdf
+    
+	
+    if [[ "${Sample}" == FMT* ]]; then
+        pdfunite \\
+            ${params.fmt_pdf} \\
+            ${Sample}_index.pdf \\
+            ${Sample}_emu_table.pdf \\
+            ${barplot_pdf} \\
+            ${params.wetlab_pdf} \\
+            ${Sample}_nanoplot.pdf \\
+            ${nanoplot_dir}/*.pdf \\
+            ${Sample}_patient_report.pdf
+
+    elif [[ "${Sample}" == RIF* ]]; then
+        pdfunite \\
+            ${params.rif_pdf} \\
+            ${Sample}_index.pdf \\
+            ${Sample}_emu_table.pdf \\
+            ${barplot_pdf} \\
+            ${params.wetlab_pdf} \\
+            ${Sample}_nanoplot.pdf \\
+            ${nanoplot_dir}/*.pdf \\
+            ${Sample}_patient_report.pdf
+    else
+        echo "Sample name must start with FMT or RIF" >&2
+        exit 1
+    fi
     """
 }
 

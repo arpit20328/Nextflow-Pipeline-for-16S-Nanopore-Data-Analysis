@@ -30,6 +30,21 @@ This is basic nextlfow pipeline for analyzing 16S Nanopore fastq files with help
    -R.4+ version installed 
    -gunzip installed
 
+   | Tool            | Purpose                                 | Install Guide or Command                                                                          |
+| --------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **seqkit**      | Subsample FASTQ files                   | `conda install -c bioconda seqkit`                                                                |
+| **seqtk**       | Extract sequences from FASTQ            | `conda install -c bioconda seqtk`                                                                 |
+| **vsearch**     | Chimera removal                         | `conda install -c bioconda vsearch`                                                               |
+| **NanoFilt**    | Read quality and length filtering       | `pip install nanofilt` or `conda install -c bioconda nanofilt`                                    |
+| **NanoPlot**    | Read quality plots                      | `pip install nanoplot` or `conda install -c bioconda nanoplot`                                    |
+| **EMU**         | Microbial abundance profiling (map-ont) | [`EMU GitHub`](https://github.com/klarman-cell-observatory/emu) (may require manual installation) |
+| **R** + Rscript | Generate barplots & tables              | `sudo apt install r-base` or via Conda                                                            |
+| **Krona Tools** | Generate interactive taxonomic plots    | `conda install -c bioconda krona`                                                                 |
+| **pdfunite**    | Merge PDFs                              | Part of `poppler-utils`: `sudo apt install poppler-utils`                                         |
+| **Python 3**    | Used in custom scripts (e.g., KRONA)    | `sudo apt install python3`                                                                        |
+| **bash**        | To run shell scripts                    | Typically pre-installed on Linux/macOS                                                            |
+
+
 # Working Directory Structure  
 Make sure you have this type of structure before running nextflow
 

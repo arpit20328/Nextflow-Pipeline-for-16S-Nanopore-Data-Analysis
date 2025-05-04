@@ -16,7 +16,7 @@ process Subsample {
 
     script:
     """	
-    seqkit sample -n 125000 -j 150 ${params.sequences}/${Sample}.fastq > ${Sample}_subsampled.fastq
+    seqkit sample -n 125000 -j 150 ${params.sequences}/${Sample}.fastq.gz > ${Sample}_subsampled.fastq
     """
 }
 
@@ -60,7 +60,7 @@ process NanoPlot {
 		tuple val (Sample), path("*_NanoPlot_Report")
 	script:
 	"""	
-	NanoPlot -t 150 --fastq ${filtered_fastq} --N50 -o ${Sample}_NanoPlot_Report
+	NanoPlot -t 150 --fastq ${filtered_fastq} --N50 -f png -o ${Sample}_NanoPlot_Report
 	"""
 }
 

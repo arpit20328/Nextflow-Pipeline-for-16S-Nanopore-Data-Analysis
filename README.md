@@ -43,6 +43,7 @@ This is basic nextlfow pipeline for analyzing 16S Nanopore fastq files with help
 | **pdfunite**    | Merge PDFs                              | Part of `poppler-utils`: `sudo apt install poppler-utils`                                         |
 | **Python 3**    | Used in custom scripts (e.g., KRONA)    | `sudo apt install python3`                                                                        |
 | **bash**        | To run shell scripts                    | Typically pre-installed on Linux/macOS                                                            |
+| **wkhtmltopdf**        | To convert html to PDF                  | Install TAR from https://wkhtmltopdf.org/downloads.html       
 
 
 # Working Directory Structure  

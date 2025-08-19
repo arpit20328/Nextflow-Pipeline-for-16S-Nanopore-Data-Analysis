@@ -59,7 +59,7 @@ bash nextflow.sh > scripts. log
 # Citation (BibTeX)
 
 @software{mathur_2025_nextflow,
-  author       = {Arpit Mathur, Vaibhav Gawde, Rahul Dhargalkar},
+  author       = {Arpit Mathur, Vaibhav Gawde, Rahul Dhargalkar,Nikhil Patkar, Anant Gokarn},
   title        = {Nextflow-Pipeline-for-16S-Nanopore-Data-Analysis},
   year         = {2025},
   version      = {1.0.0},

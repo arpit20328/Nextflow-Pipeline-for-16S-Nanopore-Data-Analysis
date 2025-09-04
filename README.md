@@ -53,9 +53,11 @@ Make sure you have this type of structure before running nextflow
 
 
 # Usage
-
-bash nextflow.sh > scripts. log 
-
+1. Files in Sequences must be with prefix like "RIF" or "FMT" [RIF for Rifaximin while FMT for Fecal Micriobiota Transplant] eg: RIF_sample.fastq.gz or FMT_samples.fastq.gz
+2. Names of the files must be in the samplesheet.csv like "RIF_sample" (without .fastq.gz suffix)
+3. Then run bash nextflow.sh > scripts. log 
+4. Output will be in Final Output folder
+   
 # Citation (BibTeX)
 
 @software{mathur_2025_nextflow,

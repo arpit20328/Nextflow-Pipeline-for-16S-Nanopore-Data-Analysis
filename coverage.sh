@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Settings
-ROOT="<enter your directory where the folder X is present in which .fastq.gz files are present>"
+ROOT="<path of sequences folder>"
 REF_MMI="<location of emu species_species_taxid.fasta.mmi>"
 OUTDIR="$PWD"
 THREADS=<Enter Threads>

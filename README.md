@@ -58,7 +58,7 @@ Make sure you have this type of structure before running nextflow
 2. Names of the files must be in the samplesheet.csv like "RIF_sample" (without .fastq.gz suffix)
 3. Then run bash nextflow.sh > scripts. log 
 4. Output will be in Final Output folder
-   
+5. For chekcing coverages of a sample.fastq.fz file please run coverage.sh script  (Optional)  
 # Citation (BibTeX)
 
 @software{mathur_2025_nextflow,

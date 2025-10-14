@@ -1,5 +1,0 @@
-vsearch --uchime_denovo /home/arpit/nextflow_16s/new_pipeline/
-work/10/9f715e5e1078ab38cdc6bf30d132c9/Nibedita_D15_filtered.fastq  --threads 150  --chimeras chimeras.fastq   --nonchime
-ras nonchimeras.fastq 
-
-  

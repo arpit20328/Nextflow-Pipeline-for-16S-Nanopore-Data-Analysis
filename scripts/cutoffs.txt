@@ -1,0 +1,5 @@
+total=0.9
+Mean Depth=25.0
+Median Depth=1
+Breadth_1x=0.8
+Breadth_10x=0.09

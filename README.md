@@ -4,7 +4,7 @@ This is basic nextlfow pipeline for analyzing 16S Nanopore fastq files with help
 
 # Pipeline Structure 
 
-![image](https://github.com/user-attachments/assets/1133a9d0-53f4-40bf-89db-70b2b171686e)
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/f5edbae1-5b8a-4400-be7b-cce4ed22678e" />
 
 # Patient Report
 
